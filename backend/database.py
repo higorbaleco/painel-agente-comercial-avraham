@@ -1,0 +1,25 @@
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+from models import Base
+
+DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///./agente_comercial.db')
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={'check_same_thread': False} if 'sqlite' in DATABASE_URL else {}
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def init_db():
+    """Criar tabelas no banco de dados"""
+    Base.metadata.create_all(bind=engine)
+
+def get_db():
+    """Dependency para obter sessão do banco"""
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
