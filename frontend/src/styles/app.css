@@ -724,3 +724,146 @@ p {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
+
+/* Seletor de tema na sidebar: empilhado e compacto */
+.sidebar__rotulo {
+  font: var(--t-caption);
+  color: var(--muted);
+  padding: 0 var(--s-3);
+  margin-bottom: var(--s-2);
+}
+
+.sidebar__rodape .seletor-tema {
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.sidebar__rodape .seletor-tema__opcao {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 40px;
+}
+
+.sidebar__rodape .seletor-tema__ativo {
+  margin-left: auto;
+}
+
+.sidebar__api {
+  margin-top: var(--s-4);
+  padding: 0 var(--s-3);
+}
+
+@media (max-width: 899px) {
+  .sidebar__rodape {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-3);
+  }
+
+  .sidebar__rodape .seletor-tema {
+    flex-direction: row;
+  }
+
+  .sidebar__rodape .seletor-tema__opcao {
+    width: auto;
+  }
+
+  .sidebar__rotulo {
+    display: none;
+  }
+
+  .sidebar__api {
+    margin-top: 0;
+  }
+}
+
+/* Distribuição por status (Painel) */
+.distribuicao {
+  margin-top: var(--s-8);
+  align-items: stretch;
+}
+
+.distribuicao__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: 100%;
+}
+
+.distribuicao__item {
+  display: grid;
+  grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr) 40px;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.distribuicao__barra {
+  display: block;
+  height: 10px;
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.distribuicao__barra > span {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+
+.distribuicao__valor {
+  font: var(--t-label);
+  text-align: right;
+}
+
+/* Detalhe da empresa */
+.detalhe__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+
+.detalhe__grade {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+
+.detalhe__largo {
+  grid-column: 1 / -1;
+}
+
+.lista-campos {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.lista-campos__item dt {
+  font: var(--t-caption);
+  color: var(--muted);
+}
+
+.lista-campos__item dd {
+  margin: var(--s-1) 0 0;
+  font: var(--t-body);
+}
+
+.texto-quebra {
+  white-space: pre-line;
+}
+
+@media (max-width: 719px) {
+  .detalhe__grade,
+  .distribuicao__item {
+    grid-template-columns: 1fr;
+  }
+}

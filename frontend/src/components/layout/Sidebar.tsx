@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Building2, Home, LayoutDashboard, Plus, RefreshCw, Settings, Wifi, WifiOff, type LucideIcon } from 'lucide-react'
+import { SeletorTema } from '../ui/SeletorTema'
 import { CAMINHOS, type NomeRota } from '../../lib/rotas'
+import type { Tema } from '../../lib/tema'
 import { empresasApi } from '../../services/empresas'
 
 interface ItemMenu {
@@ -22,12 +24,14 @@ type EstadoApi = 'verificando' | 'online' | 'offline'
 
 interface SidebarProps {
   rotaAtual: NomeRota
+  tema: Tema
+  onTema: (tema: Tema) => void
 }
 
-export function Sidebar({ rotaAtual }: SidebarProps) {
+export function Sidebar({ rotaAtual, tema, onTema }: SidebarProps) {
   const [estadoApi, setEstadoApi] = useState<EstadoApi>('verificando')
   // Edição de empresa pertence ao grupo Empresas
-  const ativo = rotaAtual === 'editar' ? 'empresas' : rotaAtual
+  const ativo = rotaAtual === 'editar' || rotaAtual === 'detalhe' ? 'empresas' : rotaAtual
 
   const verificarApi = useCallback(() => {
     setEstadoApi('verificando')
@@ -66,25 +70,30 @@ export function Sidebar({ rotaAtual }: SidebarProps) {
       </nav>
 
       <div className="sidebar__rodape">
-        {estadoApi === 'verificando' && <p className="status-api" role="status">Verificando API…</p>}
-        {estadoApi === 'online' && (
-          <p className="status-api status-api--online">
-            <Wifi size={16} aria-hidden="true" />
-            API online
-          </p>
-        )}
-        {estadoApi === 'offline' && (
-          <div className="status-api status-api--offline" role="alert">
-            <p>
-              <WifiOff size={16} aria-hidden="true" />
-              API offline
+        <p className="sidebar__rotulo">Tema</p>
+        <SeletorTema tema={tema} onTema={onTema} />
+
+        <div className="sidebar__api">
+          {estadoApi === 'verificando' && <p className="status-api" role="status">Verificando API…</p>}
+          {estadoApi === 'online' && (
+            <p className="status-api status-api--online">
+              <Wifi size={16} aria-hidden="true" />
+              API online
             </p>
-            <button type="button" className="botao botao--texto botao--pequeno" onClick={verificarApi}>
-              <RefreshCw size={14} aria-hidden="true" />
-              Tentar de novo
-            </button>
-          </div>
-        )}
+          )}
+          {estadoApi === 'offline' && (
+            <div className="status-api status-api--offline" role="alert">
+              <p>
+                <WifiOff size={16} aria-hidden="true" />
+                API offline
+              </p>
+              <button type="button" className="botao botao--texto botao--pequeno" onClick={verificarApi}>
+                <RefreshCw size={14} aria-hidden="true" />
+                Tentar de novo
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   )

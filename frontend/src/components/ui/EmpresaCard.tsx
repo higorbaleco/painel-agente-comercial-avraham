@@ -1,5 +1,5 @@
 import { CalendarCheck, CheckCircle2, CircleDashed, FileText, MessageCircle, MinusCircle, Pencil, Trash2, type LucideIcon } from 'lucide-react'
-import { editarCaminho } from '../../lib/rotas'
+import { detalheCaminho, editarCaminho } from '../../lib/rotas'
 import { STATUS_EMPRESA, type Empresa, type StatusEmpresa } from '../../lib/tipos'
 
 const ICONE_STATUS: Record<StatusEmpresa, LucideIcon> = {
@@ -31,7 +31,7 @@ export function EmpresaCard({ empresa, onExcluir }: EmpresaCardProps) {
         </span>
       </div>
 
-      <h2 className="cartao__titulo">{empresa.name}</h2>
+      <h2 className="cartao__titulo"><a href={detalheCaminho(empresa.id)}>{empresa.name}</a></h2>
       {empresa.neighborhood && <p className="cartao__meta">{empresa.neighborhood}</p>}
       {empresa.painHypothesis && <p className="cartao__dor">{empresa.painHypothesis}</p>}
 

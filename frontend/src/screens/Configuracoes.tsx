@@ -1,18 +1,12 @@
 import { useState } from 'react'
-import { Contrast, Moon, RefreshCw, Sun, Upload, Wifi, WifiOff, type LucideIcon } from 'lucide-react'
+import { RefreshCw, Upload, Wifi, WifiOff } from 'lucide-react'
+import { SeletorTema } from '../components/ui/SeletorTema'
 import { useRequisicao } from '../hooks/useRequisicao'
 import { useAviso } from '../lib/aviso'
 import { mensagemDe } from '../lib/api'
 import { PRIORIDADES, STATUS_EMPRESA, type EmpresaForm, type Prioridade, type StatusEmpresa } from '../lib/tipos'
+import type { Tema } from '../lib/tema'
 import { empresasApi } from '../services/empresas'
-
-export type Tema = 'claro' | 'escuro' | 'alto-contraste'
-
-const TEMAS: { valor: Tema; rotulo: string; Icone: LucideIcon }[] = [
-  { valor: 'claro', rotulo: 'Claro', Icone: Sun },
-  { valor: 'escuro', rotulo: 'Escuro', Icone: Moon },
-  { valor: 'alto-contraste', rotulo: 'Alto contraste', Icone: Contrast },
-]
 
 // Versão anterior do painel salvava no localStorage. Chaves usadas na importação:
 const CHAVE_LOCAL = 'agente-comercial-empresas'
@@ -48,25 +42,7 @@ function SecaoAparencia({ tema, onTema }: { tema: Tema; onTema: (tema: Tema) => 
       <h2 id="secao-aparencia" className="secao__titulo">Aparência</h2>
       <p className="secao__texto">Escolha o tema da interface. A escolha fica salva neste navegador.</p>
 
-      <div className="seletor-tema" role="radiogroup" aria-label="Tema da interface">
-        {TEMAS.map(({ valor, rotulo, Icone }) => {
-          const ativo = valor === tema
-          return (
-            <button
-              key={valor}
-              type="button"
-              role="radio"
-              aria-checked={ativo}
-              className="seletor-tema__opcao"
-              onClick={() => onTema(valor)}
-            >
-              <Icone size={16} aria-hidden="true" />
-              <span>{rotulo}</span>
-              {ativo && <span className="seletor-tema__ativo">Ativo</span>}
-            </button>
-          )
-        })}
-      </div>
+      <SeletorTema tema={tema} onTema={onTema} />
     </section>
   )
 }
