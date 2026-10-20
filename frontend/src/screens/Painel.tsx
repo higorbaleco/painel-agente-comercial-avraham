@@ -23,7 +23,7 @@ export function Painel() {
       <header className="pagina__cabecalho">
         <div>
           <h1 className="pagina__titulo">Painel</h1>
-          <p className="pagina__apoio">Resumo da prospecção em Maringá.</p>
+          <p className="pagina__apoio">Resumo da prospecção comercial.</p>
         </div>
       </header>
 

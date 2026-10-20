@@ -51,12 +51,12 @@ export function Empresas() {
     <section>
       <header className="pagina__cabecalho">
         <div>
-          <h1 className="pagina__titulo">Empresas</h1>
-          <p className="pagina__apoio">Acompanhe cada prospecção do primeiro contato ao diagnóstico.</p>
+          <h1 className="pagina__titulo">Listas</h1>
+          <p className="pagina__apoio">Todas as prospecções, do primeiro contato ao diagnóstico.</p>
         </div>
         <a className="botao botao--primario" href={CAMINHOS.nova}>
           <Plus size={18} aria-hidden="true" />
-          Nova empresa
+          Nova prospecção
         </a>
       </header>
 
@@ -131,11 +131,11 @@ export function Empresas() {
               tipo="vazio"
               icone={<Building2 size={24} aria-hidden="true" />}
               titulo="Nenhuma empresa ainda"
-              texto="Cadastre as empresas pesquisadas em Maringá para começar a acompanhar."
+              texto="Cadastre as empresas pesquisadas para começar a acompanhar."
               acoes={
                 <a className="botao botao--primario" href={CAMINHOS.nova}>
                   <Plus size={18} aria-hidden="true" />
-                  Cadastrar primeira empresa
+                  Nova prospecção
                 </a>
               }
             />

@@ -21,10 +21,10 @@ export async function requisitar<T>(caminho: string, init: RequestInit = {}): Pr
     throw new ErroApi('Não foi possível conectar à API. Verifique se o backend está rodando.', 0)
   }
 
-  const corpo = (await resposta.json().catch(() => null)) as { error?: string } | null
+  const corpo = (await resposta.json().catch(() => null)) as { error?: string; mensagem?: string } | null
 
   if (!resposta.ok) {
-    throw new ErroApi(corpo?.error ?? `Erro ${resposta.status} ao falar com a API.`, resposta.status)
+    throw new ErroApi(corpo?.mensagem ?? corpo?.error ?? `Erro ${resposta.status} ao falar com a API.`, resposta.status)
   }
   return corpo as T
 }

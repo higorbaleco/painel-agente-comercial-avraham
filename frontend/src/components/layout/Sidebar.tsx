@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Building2, Home, LayoutDashboard, Plus, RefreshCw, Settings, Wifi, WifiOff, type LucideIcon } from 'lucide-react'
+import { Home, Plus, RefreshCw, Search, Settings, Wifi, WifiOff, type LucideIcon } from 'lucide-react'
 import { SeletorTema } from '../ui/SeletorTema'
 import { CAMINHOS, type NomeRota } from '../../lib/rotas'
 import type { Tema } from '../../lib/tema'
@@ -12,12 +12,31 @@ interface ItemMenu {
   Icone: LucideIcon
 }
 
-const MENU: ItemMenu[] = [
-  { nome: 'inicio', rotulo: 'Início', caminho: CAMINHOS.inicio, Icone: Home },
-  { nome: 'painel', rotulo: 'Painel', caminho: CAMINHOS.painel, Icone: LayoutDashboard },
-  { nome: 'empresas', rotulo: 'Empresas', caminho: CAMINHOS.empresas, Icone: Building2 },
-  { nome: 'nova', rotulo: 'Nova empresa', caminho: CAMINHOS.nova, Icone: Plus },
-  { nome: 'configuracoes', rotulo: 'Configurações', caminho: CAMINHOS.configuracoes, Icone: Settings },
+interface GrupoMenu {
+  rotulo?: string
+  itens: ItemMenu[]
+}
+
+// Ordem do TELAS.md (docs/prospeccao): Início, Prospecção (Nova busca e Buscas) e Configurações.
+// Painel, Empresas, Campanhas, Oportunidades e Inteligência saem do menu; as rotas continuam até a migração.
+const MENU: GrupoMenu[] = [
+  {
+    itens: [
+      { nome: 'inicio', rotulo: 'Início', caminho: CAMINHOS.inicio, Icone: Home },
+    ],
+  },
+  {
+    rotulo: 'Prospecção',
+    itens: [
+      { nome: 'buscas-nova', rotulo: 'Nova busca', caminho: CAMINHOS.buscaNova, Icone: Plus },
+      { nome: 'buscas', rotulo: 'Buscas', caminho: CAMINHOS.buscas, Icone: Search },
+    ],
+  },
+  {
+    itens: [
+      { nome: 'configuracoes', rotulo: 'Configurações', caminho: CAMINHOS.configuracoes, Icone: Settings },
+    ],
+  },
 ]
 
 type EstadoApi = 'verificando' | 'online' | 'offline'
@@ -31,7 +50,7 @@ interface SidebarProps {
 export function Sidebar({ rotaAtual, tema, onTema }: SidebarProps) {
   const [estadoApi, setEstadoApi] = useState<EstadoApi>('verificando')
   // Edição de empresa pertence ao grupo Empresas
-  const ativo = rotaAtual === 'editar' || rotaAtual === 'detalhe' ? 'empresas' : rotaAtual
+  const ativo = rotaAtual === 'busca-lista' ? 'buscas' : rotaAtual === 'editar' || rotaAtual === 'detalhe' ? 'empresas' : rotaAtual
 
   const verificarApi = useCallback(() => {
     setEstadoApi('verificando')
@@ -53,20 +72,25 @@ export function Sidebar({ rotaAtual, tema, onTema }: SidebarProps) {
       </div>
 
       <nav aria-label="Principal" className="sidebar__nav">
-        <ul>
-          {MENU.map(({ nome, rotulo, caminho, Icone }) => (
-            <li key={nome}>
-              <a
-                href={caminho}
-                className="sidebar__link"
-                aria-current={nome === ativo ? 'page' : undefined}
-              >
-                <Icone size={18} aria-hidden="true" />
-                <span>{rotulo}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        {MENU.map((grupo, indice) => (
+          <div key={grupo.rotulo ?? indice} className="sidebar__grupo">
+            {grupo.rotulo && <p className="sidebar__rotulo">{grupo.rotulo}</p>}
+            <ul>
+              {grupo.itens.map(({ nome, rotulo, caminho, Icone }) => (
+                <li key={nome}>
+                  <a
+                    href={caminho}
+                    className="sidebar__link"
+                    aria-current={nome === ativo ? 'page' : undefined}
+                  >
+                    <Icone size={18} aria-hidden="true" />
+                    <span>{rotulo}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
 
       <div className="sidebar__rodape">

@@ -146,7 +146,7 @@ function FormularioEmpresa({ empresa }: { empresa: Empresa | null }) {
         Voltar à lista
       </a>
 
-      <h1 className="pagina__titulo">{empresa ? `Editar: ${empresa.name}` : 'Nova empresa'}</h1>
+      <h1 className="pagina__titulo">{empresa ? `Editar: ${empresa.name}` : 'Nova prospecção'}</h1>
       <p className="pagina__apoio">Campos com * são obrigatórios. Os demais podem ser preenchidos depois.</p>
 
       {erroGeral && <p className="aviso-erro" role="alert">{erroGeral}</p>}

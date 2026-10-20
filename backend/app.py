@@ -30,6 +30,9 @@ CORS(app, origins=ORIGENS_CORS)
 
 init_db()
 
+from prospeccao import bp as bp_prospeccao  # noqa: E402
+app.register_blueprint(bp_prospeccao)
+
 PRIORIDADES = ('A', 'B', 'C')
 STATUS_VALIDOS = (
     'nao-abordado',

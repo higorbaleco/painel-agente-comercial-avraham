@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 
 from icp import INDICADORES, calcular
@@ -67,3 +67,88 @@ class Empresa(Base):
             'createdAt': self.createdAt.isoformat() if self.createdAt else None,
             'updatedAt': self.updatedAt.isoformat() if self.updatedAt else None,
         }
+
+
+# ============ PROSPECÇÃO (Fase 1, docs/prospeccao/MODELO-DADOS.md) ============
+
+class Busca(Base):
+    __tablename__ = 'buscas'
+
+    id = Column(String, primary_key=True)
+    nome = Column(String, nullable=False)
+    segmento = Column(String)
+    cnaes = Column(String, nullable=False)  # JSON: lista de códigos de 7 dígitos
+    pais = Column(String, default='BR')
+    uf = Column(String(2), nullable=False)
+    municipio = Column(String, nullable=False)  # código da Receita
+    municipioNome = Column(String)
+    status = Column(String, default='rascunho')  # rascunho, executando, concluida, erro
+    criadaEm = Column(DateTime, default=datetime.utcnow)
+    atualizadaEm = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class ReceitaEstabelecimento(Base):
+    __tablename__ = 'receita_estabelecimentos'
+    __table_args__ = (Index('ix_receita_uf_municipio_cnae', 'uf', 'municipio', 'cnaePrincipal'),)
+
+    cnpj = Column(String(14), primary_key=True)  # só dígitos
+    nomeFantasia = Column(String)
+    razaoSocial = Column(String)
+    cnaePrincipal = Column(String(7))
+    cnaesSecundarios = Column(String)  # JSON
+    uf = Column(String(2))
+    municipio = Column(String)
+    bairro = Column(String)
+    logradouro = Column(String)
+    cep = Column(String)
+    situacao = Column(String)
+    porte = Column(String)  # MEI, ME, EPP, DEMAIS
+    capitalSocial = Column(Float)
+    simples = Column(Boolean)
+    telefone = Column(String)  # só para não-MEI
+    email = Column(String)  # só para não-MEI
+    importadoEm = Column(DateTime, default=datetime.utcnow)
+
+
+class Lead(Base):
+    __tablename__ = 'leads'
+    __table_args__ = (UniqueConstraint('buscaId', 'cnpj', name='uq_lead_busca_cnpj'),)
+
+    id = Column(String, primary_key=True)
+    buscaId = Column(String, ForeignKey('buscas.id'), nullable=False, index=True)
+    cnpj = Column(String(14), nullable=False)
+    nome = Column(String)
+    cidade = Column(String)
+    etapa = Column(String, default='descoberto')  # descoberto, enriquecido, aprovado, reprovado, no_pipeline
+    veredito = Column(String, default='pendente')  # pendente, aprovado, reprovado
+    vereditoMotivo = Column(String)
+    criadoEm = Column(DateTime, default=datetime.utcnow)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'buscaId': self.buscaId,
+            'cnpj': self.cnpj,
+            'nome': self.nome,
+            'cidade': self.cidade,
+            'etapa': self.etapa,
+            'veredito': self.veredito,
+            'vereditoMotivo': self.vereditoMotivo,
+            'criadoEm': self.criadoEm.isoformat() if self.criadoEm else None,
+        }
+
+
+class Cnae(Base):
+    __tablename__ = 'referencias_cnaes'
+
+    codigo = Column(String(7), primary_key=True)
+    descricao = Column(String, nullable=False)
+
+
+class Municipio(Base):
+    __tablename__ = 'referencias_municipios'
+    __table_args__ = (Index('ix_municipio_uf_nome', 'uf', 'nome'),)
+
+    codigo = Column(String, primary_key=True)
+    nome = Column(String, nullable=False)
+    uf = Column(String(2), nullable=False)

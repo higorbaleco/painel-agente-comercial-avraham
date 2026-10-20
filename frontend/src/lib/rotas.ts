@@ -7,6 +7,13 @@ export type Rota =
   | { nome: 'nova' }
   | { nome: 'detalhe'; id: string }
   | { nome: 'editar'; id: string }
+  | { nome: 'buscas' }
+  | { nome: 'buscas-nova' }
+  | { nome: 'busca-lista'; id: string }
+  | { nome: 'campanhas' }
+  | { nome: 'oportunidades' }
+  | { nome: 'pipeline' }
+  | { nome: 'inteligencia' }
   | { nome: 'configuracoes' }
   | { nome: 'nao-encontrada' }
 
@@ -17,8 +24,18 @@ export const CAMINHOS = {
   painel: '#/painel',
   empresas: '#/empresas',
   nova: '#/empresas/nova',
+  buscas: '#/buscas',
+  buscaNova: '#/buscas/nova',
+  campanhas: '#/campanhas',
+  oportunidades: '#/oportunidades',
+  pipeline: '#/pipeline',
+  inteligencia: '#/inteligencia',
   configuracoes: '#/configuracoes',
 } as const
+
+export function buscaListaCaminho(id: string): string {
+  return `#/buscas/${encodeURIComponent(id)}/lista`
+}
 
 export function detalheCaminho(id: string): string {
   return `#/empresas/${encodeURIComponent(id)}`
@@ -35,6 +52,15 @@ export function lerRota(hash: string): Rota {
   if (partes.length === 0) return { nome: 'inicio' }
   if (primeira === 'inicio') return { nome: 'inicio' }
   if (primeira === 'painel') return { nome: 'painel' }
+  if (primeira === 'buscas') {
+    if (!segunda) return { nome: 'buscas' }
+    if (segunda === 'nova') return { nome: 'buscas-nova' }
+    if (terceira === 'lista') return { nome: 'busca-lista', id: decodeURIComponent(segunda) }
+  }
+  if (primeira === 'campanhas') return { nome: 'campanhas' }
+  if (primeira === 'oportunidades') return { nome: 'oportunidades' }
+  if (primeira === 'pipeline') return { nome: 'pipeline' }
+  if (primeira === 'inteligencia') return { nome: 'inteligencia' }
   if (primeira === 'configuracoes') return { nome: 'configuracoes' }
 
   if (primeira === 'empresas') {

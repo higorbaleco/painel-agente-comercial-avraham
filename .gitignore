@@ -1,5 +1,14 @@
+# Dados pessoais e planilhas com contatos (não versionar)
+*.xlsx
+*.csv
+backend/agente_comercial.db
+backend/data/
+
 # Backend Python
 backend/venv/
+backend/venv_coleta/
+backend/.scrapling_cache/
+.scrapling_cache/
 backend/__pycache__/
 backend/*.pyc
 backend/.env
