@@ -113,6 +113,13 @@ function paraFormulario(item: LocalEmpresa): EmpresaForm {
     facts: texto(item.facts),
     painHypothesis: texto(item.painHypothesis),
     notes: texto(item.notes),
+    cnpj: '',
+    city: '',
+    segment: '',
+    campaign: '',
+    offer: '',
+    nextContact: '',
+    indicators: {},
   }
 }
 

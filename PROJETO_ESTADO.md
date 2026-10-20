@@ -76,3 +76,23 @@ Entidade `Empresa` (localStorage):
 - Mudança de design aceita: cartões 3D e glassmorphism do README foram trocados por superfícies e borda discreta (regra de design: sem gradiente nem sombra pesada).
 - Pendente: validação visual no navegador nos três temas e em mobile; autenticação; tratamento LGPD dos telefones; migrações de banco.
 - Documentação de execução: `SETUP.md`.
+
+## Radar ICP (documento separado)
+- Conversa de criação do plugin de triagem comercial movida para `docs/radar-icp/` (ver `docs/radar-icp/README.md`).
+- Não faz parte da v1 do painel; dados de CNPJ e contato não são versionados.
+
+## Proposta de escopo ampliado (pendente)
+- Proposta "Escopo ideal — Agente Comercial Avraham" salva em `docs/escopo-agente-comercial.md`.
+- Conflita com a seção 3 (v1): a proposta inclui CRM, pipeline e integrações, que a v1 exclui. Não aplicado até aprovação do usuário.
+
+## Fase 1 do escopo ampliado — implementada (19/10 a 20/10/2026)
+Aprovada pelo usuário ("ok corrija implemente"). Escopo desta entrega:
+- **Score ICP:** 8 indicadores (0 a 5) com pesos somando 100 (`backend/icp.py`). Sem os 8 preenchidos, não há score. Classe A ≥ 75, B ≥ 55, C abaixo. Cálculo no servidor; prévia no formulário espelha a regra (`frontend/src/lib/icp.ts`).
+- **Campos novos:** CNPJ, cidade, segmento, campanha, oferta recomendada, próximo contato e indicadores.
+- **Migração:** aditiva (`database.py`). Só adiciona colunas. Backup feito antes do primeiro uso.
+- **Busca e estatísticas:** filtro por classe (`icpClass`); contagem A/B/C e "sem score" em `/api/stats`.
+- **Testes:** 15 checagens da API em banco temporário (cópia do backup), todas passando. Build e type check passando.
+- **Preview:** `docs/radar-icp/preview-*.png` (lista, detalhe e formulário), com um registro de exemplo marcado [EXEMPLO], que foi removido depois.
+
+**Fora desta entrega (Fase 1 ainda pendente):** scripts de abordagem e copiloto de vendas, enriquecimento automático (crawler/Google Maps), painel de inteligência por classe e campanhas múltiplas. Fases 2 e 3 seguem sem data.
+**Pendente de decisão:** o escopo da v1 (seção 3) continua listando CRM e integrações como fora. Esta entrega cobre só a parte de inteligência e pipeline simples.

@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 from datetime import datetime
 
@@ -12,6 +13,7 @@ from flask_cors import CORS  # noqa: E402
 from sqlalchemy.exc import SQLAlchemyError  # noqa: E402
 
 from database import SessionLocal, init_db  # noqa: E402
+from icp import CLASSE_A_MIN, CLASSE_B_MIN, validar_indicadores  # noqa: E402
 from models import Empresa  # noqa: E402
 
 app = Flask(__name__)
@@ -37,9 +39,15 @@ STATUS_VALIDOS = (
     'diagnostico-agendado',
     'proposta-enviada',
 )
-CAMPOS_TEXTO = ('neighborhood', 'phone', 'contact', 'facts', 'painHypothesis', 'notes')
+CLASSES_VALIDAS = ('A', 'B', 'C')
+CAMPOS_TEXTO = (
+    'neighborhood', 'phone', 'contact', 'facts', 'painHypothesis', 'notes',
+    'cnpj', 'city', 'segment', 'campaign', 'offer',
+)
 LIMITE_NOME = 120
 LIMITE_TEXTO = 2000
+LIMITE_CNPJ = 18
+PADRAO_DATA = re.compile(r'\d{4}-\d{2}-\d{2}')
 
 
 class ErroValidacao(Exception):
@@ -90,6 +98,23 @@ def _validar(dados: dict, completo: bool) -> dict:
                 raise ErroValidacao(f'Campo {campo} excede {LIMITE_TEXTO} caracteres.')
             limpo[campo] = valor.strip()
 
+    if len(limpo.get('cnpj', '')) > LIMITE_CNPJ:
+        raise ErroValidacao('CNPJ inválido.')
+
+    if completo or 'nextContact' in dados:
+        data = dados.get('nextContact') or ''
+        if not isinstance(data, str):
+            raise ErroValidacao('Próximo contato deve ser uma data.')
+        if data and not PADRAO_DATA.fullmatch(data):
+            raise ErroValidacao('Próximo contato deve estar no formato AAAA-MM-DD.')
+        limpo['nextContact'] = data or None
+
+    if completo or 'indicators' in dados:
+        try:
+            limpo['indicators'] = validar_indicadores(dados.get('indicators'))
+        except ValueError as erro:
+            raise ErroValidacao(str(erro))
+
     return limpo
 
 
@@ -116,7 +141,9 @@ def create_empresa():
 
     with SessionLocal() as db:
         try:
+            indicadores = dados.pop('indicators', {})
             empresa = Empresa(id=uuid.uuid4().hex, **dados)
+            empresa.aplicar_indicadores(indicadores)
             db.add(empresa)
             db.commit()
             db.refresh(empresa)
@@ -154,8 +181,11 @@ def update_empresa(empresa_id: str):
             if not empresa:
                 return _erro('Empresa não encontrada', 404)
 
+            indicadores = dados.pop('indicators', None)
             for campo, valor in dados.items():
                 setattr(empresa, campo, valor)
+            if indicadores is not None:
+                empresa.aplicar_indicadores(indicadores)
             empresa.updatedAt = datetime.utcnow()
 
             db.commit()
@@ -196,11 +226,14 @@ def search_empresas():
     termo = request.args.get('q', '').strip()
     status = request.args.get('status')
     prioridade = request.args.get('priority')
+    classe = request.args.get('icpClass')
 
     if status and status not in STATUS_VALIDOS:
         return _erro('Status inválido.', 400)
     if prioridade and prioridade not in PRIORIDADES:
         return _erro('Prioridade deve ser A, B ou C.', 400)
+    if classe and classe not in CLASSES_VALIDAS:
+        return _erro('Classe ICP deve ser A, B ou C.', 400)
 
     with SessionLocal() as db:
         query = db.query(Empresa)
@@ -208,11 +241,14 @@ def search_empresas():
             query = query.filter(
                 Empresa.name.icontains(termo, autoescape=True)
                 | Empresa.neighborhood.icontains(termo, autoescape=True)
+                | Empresa.city.icontains(termo, autoescape=True)
             )
         if status:
             query = query.filter(Empresa.status == status)
         if prioridade:
             query = query.filter(Empresa.priority == prioridade)
+        if classe:
+            query = query.filter(Empresa.icpClass == classe)
 
         empresas = query.order_by(Empresa.createdAt.desc()).all()
         return jsonify({
@@ -243,6 +279,13 @@ def get_stats():
 
         taxa = (dores / contatos * 100) if contatos > 0 else 0
 
+        classes = {
+            'A': db.query(Empresa).filter(Empresa.icpClass == 'A').count(),
+            'B': db.query(Empresa).filter(Empresa.icpClass == 'B').count(),
+            'C': db.query(Empresa).filter(Empresa.icpClass == 'C').count(),
+            'semScore': db.query(Empresa).filter(Empresa.icpClass.is_(None)).count(),
+        }
+
         return jsonify({
             'stats': {
                 'total': total,
@@ -251,6 +294,9 @@ def get_stats():
                 'diagnosticos': diagnosticos,
                 'propostas': propostas,
                 'taxa': round(taxa, 1),
+                'classes': classes,
+                'limiteA': CLASSE_A_MIN,
+                'limiteB': CLASSE_B_MIN,
             }
         }), 200
 

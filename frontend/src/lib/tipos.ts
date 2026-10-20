@@ -1,4 +1,8 @@
+import type { Indicadores } from './icp'
+
 export type Prioridade = 'A' | 'B' | 'C'
+
+export type ClasseIcp = 'A' | 'B' | 'C'
 
 export type StatusEmpresa =
   | 'nao-abordado'
@@ -19,14 +23,24 @@ export interface Empresa {
   facts: string
   painHypothesis: string
   notes: string
+  cnpj: string
+  city: string
+  segment: string
+  campaign: string
+  offer: string
+  nextContact: string | null
+  indicators: Indicadores
+  indicatorsTotal: number
+  icpScore: number | null
+  icpClass: ClasseIcp | null
   createdAt: string | null
   updatedAt: string | null
 }
 
 export type EmpresaForm = Pick<
   Empresa,
-  'name' | 'neighborhood' | 'phone' | 'contact' | 'priority' | 'status' | 'facts' | 'painHypothesis' | 'notes'
->
+  'name' | 'neighborhood' | 'phone' | 'contact' | 'priority' | 'status' | 'facts' | 'painHypothesis' | 'notes' | 'cnpj' | 'city' | 'segment' | 'campaign' | 'offer' | 'indicators'
+> & { nextContact: string }
 
 export interface Estatisticas {
   total: number
@@ -35,6 +49,9 @@ export interface Estatisticas {
   diagnosticos: number
   propostas: number
   taxa: number
+  classes: Record<ClasseIcp, number> & { semScore: number }
+  limiteA: number
+  limiteB: number
 }
 
 export const PRIORIDADES: Record<Prioridade, string> = {
@@ -62,4 +79,11 @@ export const FORM_VAZIO: EmpresaForm = {
   facts: '',
   painHypothesis: '',
   notes: '',
+  cnpj: '',
+  city: '',
+  segment: '',
+  campaign: '',
+  offer: '',
+  nextContact: '',
+  indicators: {},
 }

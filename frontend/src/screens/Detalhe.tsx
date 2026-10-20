@@ -7,6 +7,7 @@ import { mensagemDe } from '../lib/api'
 import { useAviso } from '../lib/aviso'
 import { CAMINHOS, editarCaminho } from '../lib/rotas'
 import { PRIORIDADES, STATUS_EMPRESA } from '../lib/tipos'
+import { INDICADORES } from '../lib/icp'
 import { empresasApi } from '../services/empresas'
 
 interface DetalheProps {
@@ -92,6 +93,28 @@ export function Detalhe({ id }: DetalheProps) {
           </dl>
         </section>
 
+        <section className="secao detalhe__largo" aria-labelledby="det-icp">
+          <h2 id="det-icp" className="secao__titulo">Score ICP</h2>
+          <dl className="lista-campos">
+            <Campo rotulo="Resultado">
+              {empresa.icpClass
+                ? `${empresa.icpScore} pontos · Classe ${empresa.icpClass}`
+                : `A validar (${Object.keys(empresa.indicators).length} de ${empresa.indicatorsTotal} indicadores)`}
+            </Campo>
+            <Campo rotulo="Campanha">{empresa.campaign || '—'}</Campo>
+            <Campo rotulo="Segmento">{empresa.segment || '—'}</Campo>
+            <Campo rotulo="Oferta recomendada">{empresa.offer || '—'}</Campo>
+            <Campo rotulo="Próximo contato">{formatarDataSimples(empresa.nextContact)}</Campo>
+          </dl>
+          <ul className="icp__lista">
+            {INDICADORES.map(ind => (
+              <li key={ind.chave}>
+                {ind.rotulo}: {empresa.indicators[ind.chave] ?? 'não sei'}
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section className="secao" aria-labelledby="det-contato">
           <h2 id="det-contato" className="secao__titulo">Contato</h2>
           <dl className="lista-campos">
@@ -153,6 +176,12 @@ function Campo({ rotulo, children }: { rotulo: string; children: ReactNode }) {
       <dd>{children}</dd>
     </div>
   )
+}
+
+function formatarDataSimples(aaaammdd: string | null): string {
+  if (!aaaammdd) return '—'
+  const [ano, mes, dia] = aaaammdd.split('-')
+  return `${dia}/${mes}/${ano}`
 }
 
 function formatarData(iso: string | null): string {

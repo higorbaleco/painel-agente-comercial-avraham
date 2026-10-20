@@ -6,6 +6,7 @@ import { useRequisicao } from '../hooks/useRequisicao'
 import { useAviso } from '../lib/aviso'
 import { mensagemDe } from '../lib/api'
 import { CAMINHOS } from '../lib/rotas'
+import { INDICADORES, previaIcp, type ChaveIndicador, type Indicadores } from '../lib/icp'
 import { FORM_VAZIO, PRIORIDADES, STATUS_EMPRESA, type Empresa, type EmpresaForm as Dados, type Prioridade, type StatusEmpresa } from '../lib/tipos'
 import { empresasApi } from '../services/empresas'
 
@@ -73,6 +74,13 @@ function FormularioEmpresa({ empresa }: { empresa: Empresa | null }) {
           facts: empresa.facts,
           painHypothesis: empresa.painHypothesis,
           notes: empresa.notes,
+          cnpj: empresa.cnpj,
+          city: empresa.city,
+          segment: empresa.segment,
+          campaign: empresa.campaign,
+          offer: empresa.offer,
+          nextContact: empresa.nextContact ?? '',
+          indicators: empresa.indicators,
         }
       : FORM_VAZIO,
   )
@@ -86,6 +94,18 @@ function FormularioEmpresa({ empresa }: { empresa: Empresa | null }) {
       setErros(prev => ({ ...prev, [campo]: undefined }))
     }
   }
+
+  // Vazio = desconhecido (não nota zero): a chave sai do objeto.
+  const atualizarIndicador = (chave: ChaveIndicador, valor: string) => {
+    setDados(prev => {
+      const proximo: Indicadores = { ...prev.indicators }
+      if (valor === '') delete proximo[chave]
+      else proximo[chave] = Number(valor)
+      return { ...prev, indicators: proximo }
+    })
+  }
+
+  const previa = previaIcp(dados.indicators)
 
   async function enviar(e: FormEvent) {
     e.preventDefault()
@@ -172,6 +192,27 @@ function FormularioEmpresa({ empresa }: { empresa: Empresa | null }) {
             </Campo>
           </div>
 
+          <div className="formulario__linha">
+            <Campo id="cidade" rotulo="Cidade">
+              <input
+                id="cidade"
+                className="campo__input"
+                value={dados.city}
+                placeholder="ex: Maringá"
+                onChange={e => atualizar('city', e.target.value)}
+              />
+            </Campo>
+            <Campo id="cnpj" rotulo="CNPJ">
+              <input
+                id="cnpj"
+                className="campo__input"
+                value={dados.cnpj}
+                placeholder="00.000.000/0000-00"
+                onChange={e => atualizar('cnpj', e.target.value)}
+              />
+            </Campo>
+          </div>
+
           <Campo id="contato" rotulo="Contato comercial (link ou @usuário)" erro={erros.contact}>
             <input
               id="contato"
@@ -183,6 +224,83 @@ function FormularioEmpresa({ empresa }: { empresa: Empresa | null }) {
               aria-describedby={erros.contact ? 'contato-erro' : undefined}
             />
           </Campo>
+        </fieldset>
+
+        <fieldset className="formulario__grupo">
+          <legend className="formulario__legenda">Inteligência comercial</legend>
+
+          <div className="formulario__linha">
+            <Campo id="campanha" rotulo="Campanha">
+              <input
+                id="campanha"
+                className="campo__input"
+                value={dados.campaign}
+                placeholder="ex: Pizzarias Maringá"
+                onChange={e => atualizar('campaign', e.target.value)}
+              />
+            </Campo>
+            <Campo id="segmento" rotulo="Segmento">
+              <input
+                id="segmento"
+                className="campo__input"
+                value={dados.segment}
+                placeholder="ex: Pizzaria com delivery"
+                onChange={e => atualizar('segment', e.target.value)}
+              />
+            </Campo>
+          </div>
+
+          <div className="formulario__linha">
+            <Campo id="oferta" rotulo="Oferta recomendada">
+              <input
+                id="oferta"
+                className="campo__input"
+                value={dados.offer}
+                placeholder="ex: WhatsApp de Pedidos"
+                onChange={e => atualizar('offer', e.target.value)}
+              />
+            </Campo>
+            <Campo id="proximo-contato" rotulo="Próximo contato">
+              <input
+                id="proximo-contato"
+                type="date"
+                className="campo__input"
+                value={dados.nextContact}
+                onChange={e => atualizar('nextContact', e.target.value)}
+              />
+            </Campo>
+          </div>
+
+          <div className="icp">
+            <div className="icp__cabecalho">
+              <h3 className="icp__titulo">Indicadores ICP (0 a 5)</h3>
+              <p className="icp__previa" aria-live="polite">
+                {previa.score === null
+                  ? `Prévia: ${Object.keys(dados.indicators).length} de ${INDICADORES.length} preenchidos. Sem todos, não há score.`
+                  : `Prévia: ${previa.score} pontos · Classe ${previa.classe}. O servidor recalcula ao salvar.`}
+              </p>
+            </div>
+            <p className="pagina__apoio">Deixe em “Não sei” o que ainda não foi verificado. Não é nota zero.</p>
+            <div className="icp__grade">
+              {INDICADORES.map(ind => (
+                <Campo key={ind.chave} id={`ind-${ind.chave}`} rotulo={`${ind.rotulo} (peso ${ind.peso})`}>
+                  <select
+                    id={`ind-${ind.chave}`}
+                    className="campo__input"
+                    value={dados.indicators[ind.chave] ?? ''}
+                    onChange={e => atualizarIndicador(ind.chave, e.target.value)}
+                    aria-describedby={`ind-${ind.chave}-ajuda`}
+                  >
+                    <option value="">Não sei</option>
+                    {[0, 1, 2, 3, 4, 5].map(n => (
+                      <option key={n} value={n}>{n}</option>
+                    ))}
+                  </select>
+                  <span id={`ind-${ind.chave}-ajuda`} className="campo__ajuda">{ind.ajuda}</span>
+                </Campo>
+              ))}
+            </div>
+          </div>
         </fieldset>
 
         <fieldset className="formulario__grupo">

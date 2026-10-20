@@ -33,6 +33,12 @@ export function EmpresaCard({ empresa, onExcluir }: EmpresaCardProps) {
 
       <h2 className="cartao__titulo"><a href={detalheCaminho(empresa.id)}>{empresa.name}</a></h2>
       {empresa.neighborhood && <p className="cartao__meta">{empresa.neighborhood}</p>}
+      <p className="cartao__meta">
+        {empresa.icpClass
+          ? `ICP ${empresa.icpScore} pts · Classe ${empresa.icpClass}`
+          : 'ICP a validar'}
+        {empresa.city && ` · ${empresa.city}`}
+      </p>
       {empresa.painHypothesis && <p className="cartao__dor">{empresa.painHypothesis}</p>}
 
       <div className="cartao__acoes">
