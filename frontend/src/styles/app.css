@@ -969,3 +969,34 @@ p {
   margin: 0 0 var(--s-1);
   padding: 0 var(--s-3);
 }
+
+/* Tabelas (Buscas e Lista inicial) */
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  font: var(--t-body);
+  color: var(--text);
+}
+
+.tabela th,
+.tabela td {
+  padding: var(--s-3) var(--s-3);
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--line);
+}
+
+.tabela th {
+  font: var(--t-label);
+  color: var(--muted);
+}
+
+.tabela__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-2);
+}

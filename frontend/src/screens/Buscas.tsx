@@ -94,7 +94,8 @@ export function Buscas() {
                 <td>{busca.municipioNome ?? busca.municipio}/{busca.uf}</td>
                 <td>{STATUS_BUSCA[busca.status]}</td>
                 <td>{busca.totalLeads}</td>
-                <td className="tabela__acoes">
+                <td>
+                  <div className="tabela__acoes">
                   <a className="botao botao--texto botao--pequeno" href={buscaListaCaminho(busca.id)}>
                     Abrir<span className="sr-only"> {busca.nome}</span>
                   </a>
@@ -106,6 +107,7 @@ export function Buscas() {
                   >
                     {executando === busca.id ? 'Executando…' : 'Executar busca'}
                   </button>
+                  </div>
                 </td>
               </tr>
             ))}

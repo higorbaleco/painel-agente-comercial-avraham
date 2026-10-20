@@ -222,3 +222,10 @@ Pedido do usuário: menu em Painel > Prospecção > Nova prospecção > Listas (
 **Pendente**
 - Enriquecimento: não existe tela nem dados. Não entrou no menu até ser construído.
 - Alinhamento visual das telas: o usuário vai enviar a lista de erros. Ainda não foi tratado.
+
+## Fase 1 da Prospecção — status (20/10/2026)
+- Concluído: backend (`backend/prospeccao.py`, tabelas de busca, receita, leads e referências); 29 testes de API passaram em banco temporário; telas Nova busca, Buscas e Lista inicial; Início com o fluxo de 5 passos; menu conforme TELAS.md.
+- Pendente: seção de Receita em Configurações; carga de CNAEs e municípios (referências vazias); validação do layout oficial da Receita (importador usa CSV unificado); pendências do ESCOPO.md (CNAEs, colunas do pipeline, prazo de retenção).
+- Desvio do API.md: execução síncrona, sem job 202.
+- Dados de exemplo [EXEMPLO] usados nos previews foram removidos da base.
+- Fases 2 a 4: não iniciadas.
