@@ -1,0 +1,85 @@
+/* Tokens semânticos. Componentes usam apenas os papéis (--page, --surface…), nunca hex.
+   Hierarquia de luminosidade fixa: sidebar mais escura que o canvas, cartão mais claro que o canvas. */
+
+:root,
+[data-theme='escuro'] {
+  --sidebar: #071514;
+  --page: #0B1F1E;
+  --surface: #15302E;
+  --text: #E6F4F1;
+  --muted: #A7C4C0;
+  --line: #2C4F4C;
+  --line-forte: #6E9C97;
+  --primary: #2DD4BF;
+  --primary-ink: #04211E;
+  --success: #4ADE80;
+  --warning: #FBBF24;
+  --danger: #F87171;
+  --danger-ink: #1A0505;
+  --focus: #5EEAD4;
+  --sombra: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='claro'] {
+  --sidebar: #CFEDE8;
+  --page: #F0FDFA;
+  --surface: #FBFFFE;
+  --text: #0F3B3A;
+  --muted: #3F6563;
+  --line: #B7D9D4;
+  --line-forte: #5E8E89;
+  --primary: #0F766E;
+  --primary-ink: #FFFFFF;
+  --success: #166534;
+  --warning: #92400E;
+  --danger: #B42318;
+  --danger-ink: #FFFFFF;
+  --focus: #0F766E;
+  --sombra: 0 1px 2px rgba(15, 59, 58, 0.08);
+}
+
+[data-theme='alto-contraste'] {
+  --sidebar: #000605;
+  --page: #00100F;
+  --surface: #00201E;
+  --text: #F7FFFE;
+  --muted: #D2F5EF;
+  --line: #9FF5E8;
+  --line-forte: #9FF5E8;
+  --primary: #5EEAD4;
+  --primary-ink: #00110F;
+  --success: #86EFAC;
+  --warning: #FDE047;
+  --danger: #FF8A8A;
+  --danger-ink: #000000;
+  --focus: #FFFFFF;
+  --sombra: none;
+}
+
+:root {
+  /* Escala de espaçamento base 4 px */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+
+  /* Raio único */
+  --raio: 12px;
+  --raio-pequeno: 8px;
+
+  /* Tipografia — preset Equilibrada, valores fixos */
+  --fonte: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --t-display: 700 40px/48px var(--fonte);
+  --t-h1: 700 30px/38px var(--fonte);
+  --t-h2: 600 22px/30px var(--fonte);
+  --t-h3: 600 18px/26px var(--fonte);
+  --t-body: 400 14px/22px var(--fonte);
+  --t-label: 600 14px/20px var(--fonte);
+  --t-caption: 500 12px/18px var(--fonte);
+  --t-kpi: 700 28px/36px var(--fonte);
+
+  --largura-menu: 248px;
+}
