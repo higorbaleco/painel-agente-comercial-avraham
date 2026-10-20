@@ -41,7 +41,18 @@ Cada fase só começa quando a anterior está com o aceite validado pelo usuári
 - [ ] API: enriquecer lead e lote
 - [ ] Tela: Diagnóstico e Ficha do lead
 - [ ] Testes: lead com site, lead sem site, site bloqueado, lead sem os 8 indicadores
-- **Aceite:** cada campo da ficha mostra origem e data; leads sem score aparecem como "ICP a validar".
+- **Critérios de aceite detalhados:**
+  - [ ] Lead sem CNPJ não consulta a BrasilAPI e não recebe dados cadastrais.
+  - [ ] Erro ou limite de requisições da BrasilAPI marca o lead como "pendente" e segue o lote; nenhuma falha derruba o lote inteiro.
+  - [ ] Teste confirma que o quadro societário (QSA) nunca é gravado no banco.
+  - [ ] Site que bloqueia `robots.txt` vira `nao_coletavel`; o mesmo domínio não é tentado de novo na rodada.
+  - [ ] Coleta respeita limite de velocidade por domínio e usa cache por URL (segunda rodada não refaz requisição).
+  - [ ] Sinais (WhatsApp, delivery, cardápio online) guardam URL e data em `lead_campos`.
+  - [ ] Indicador sugerido nunca sobrescreve nota confirmada pelo usuário (origem `usuario` tem prioridade).
+  - [ ] Sem os 8 indicadores, o lead mostra "ICP a validar"; com os 8, score e classe batem com `backend/icp.py` (teste de paridade).
+  - [ ] Faixas de capital social e idade da empresa vêm de configuração, não do código.
+  - [ ] Telas Diagnóstico e Ficha mostram origem e data de cada sinal, com texto além da cor, nos três temas.
+- **Aceite geral:** cada campo da ficha mostra origem e data; leads sem score aparecem como "ICP a validar".
 
 ## Fase 3 — Revisão
 - [ ] Veredito (aprovado ou reprovado) com motivo obrigatório ao reprovar
