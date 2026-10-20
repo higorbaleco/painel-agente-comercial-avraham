@@ -21,7 +21,15 @@ Cada fase só começa quando a anterior está com o aceite validado pelo usuári
 - [ ] API: `buscas` (CRUD e executar), `leads` (listagem), `receita` (importar e status), `referencias`
 - [ ] Telas: Nova busca, Buscas e Lista inicial
 - [ ] Testes: importação de amostra, filtro por CNAE, MEI sem contato
-- **Aceite:** uma busca real (CNAE e município) retorna a lista de empresas daquele município.
+- **Critérios de aceite detalhados:**
+  - [ ] Busca com CNAE e município reais retorna apenas empresas ativas daquele município e daqueles CNAEs.
+  - [ ] Busca sem CNAE, sem UF ou sem município é recusada com 400 (validação) e mensagem na tela.
+  - [ ] Lista mostra nome, CNPJ, município, situação e porte; filtros de porte e situação funcionam.
+  - [ ] MEI aparece na lista sem telefone nem e-mail.
+  - [ ] Execução sem base da Receita importada retorna 503 e mostra aviso com link para Configurações.
+  - [ ] Importação repetida não duplica registros (chave por CNPJ).
+  - [ ] Telas Nova busca, Buscas e Lista têm vazio, carregando, erro e sucesso validados nos três temas.
+- **Aceite geral:** uma busca real (CNAE e município) retorna a lista de empresas daquele município.
 
 ## Fase 2 — Enriquecimento e diagnóstico
 - [ ] Cliente BrasilAPI para CNPJ, sem armazenar QSA

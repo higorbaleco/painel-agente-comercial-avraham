@@ -64,3 +64,30 @@ Todas as telas seguem `design-rigoroso.md`: tokens semânticos, contraste AA, um
 
 ## Telas removidas após a migração
 - Painel, Empresas, Campanhas, Oportunidades e Inteligência. Os indicadores que elas mostravam passam a ser derivados das fases acima (ex.: total por fase no Início).
+
+## Pipeline: kanban e tabela
+O mesmo conjunto de leads aprovados aparece em duas visões, alternadas por um controle de visualização (Kanban | Tabela). A ação primária não muda.
+
+- **Kanban:** colunas com cards, total por coluna no cabeçalho, total geral no topo.
+- **Tabela:** uma linha por lead, colunas: empresa, classe, valor, coluna, próxima ação, última alteração. Ordenação por coluna. Valor editável direto na célula. Total no rodapé, que respeita os filtros ativos.
+- Filtros (classe, coluna, busca por nome) valem para as duas visões.
+- Preferência de visão fica salva no navegador.
+
+## Especificação por interação
+Formato exigido pelo projeto: evento, regra, validação, feedback, erro, vazio e carregamento.
+
+| Tela | Evento | Regra | Validação | Feedback | Erro | Vazio | Carregando |
+|---|---|---|---|---|---|---|---|
+| Nova busca | Criar busca | ao menos 1 CNAE, UF e município | campos obrigatórios marcados; CNAE inválido não aceito | "Busca criada" | erro de envio mantém os dados digitados | — | botão desabilitado com texto "Criando…" |
+| Nova busca | Escolher CNAE | busca por código ou descrição | código de 7 dígitos ou texto mínimo de 3 letras | lista de sugestões | "Nenhum CNAE encontrado" | "Digite para buscar" | indicador discreto na lista |
+| Buscas | Executar busca | sem busca em andamento | — | status muda para "Executando" | status "Erro" com motivo e ação "Tentar de novo" | "Nenhuma busca. Criar primeira" | status "Executando" com contagem |
+| Lista inicial | Enriquecer lista | só empresas da busca | seleção vazia desabilita a ação | contagem enviada para enriquecimento | falhas por lead ficam marcadas; demais seguem | "Nenhuma empresa para estes CNAEs neste município" | progresso por lote |
+| Diagnóstico | Ver sinais | origem visível em cada sinal | — | origem e data no tooltip e no texto | "Sem dados do site (bloqueado ou indisponível)" | "Nenhum lead enriquecido" | esqueleto de linhas |
+| Diagnóstico | Ajustar indicador | nota 0 a 5 ou vazio | fora da faixa é recusado | nota salva, origem `usuario` | falha de envio mantém a nota digitada | — | campo desabilitado enquanto salva |
+| Revisão | Aprovar | — | — | lead sai da fila | erro mantém na fila | "Nenhum lead aguardando veredito" | — |
+| Revisão | Reprovar | motivo obrigatório | motivo vazio bloqueia o botão | lead vai para Arquivados | erro mantém na fila | — | — |
+| Pipeline | Mover card | só aprovados; coluna existente | coluna inexistente recusada | card na nova coluna, total atualizado | card volta à posição anterior | "Nenhum lead aprovado" | card em trânsito |
+| Pipeline | Editar valor | número positivo ou vazio | valor negativo recusado | total atualizado | valor anterior restaurado | — | valor com indicador de salvamento |
+| Pipeline | Excluir coluna | exige destino se houver cards | destino obrigatório | cards movidos | erro não move nenhum card | — | botão em "Excluindo…" |
+
+Toda ação destrutiva pede confirmação. Toda tela de dados tem os quatro estados (vazio, carregando, erro, sucesso).

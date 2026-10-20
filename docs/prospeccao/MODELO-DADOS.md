@@ -99,4 +99,19 @@ Carregadas uma vez a partir de tabelas oficiais da Receita.
 - Tabela legada `empresas` continua existindo. Não é removida; a importação para `leads` é opcional e só se o usuário pedir.
 
 ## Score ICP e indicadores
-`backend/icp.py` exige 8 indicadores com pesos somando 100. Os dados coletados preenchem alguns deles automaticamente, por exemplo porte e capital social (escala e capacidade de investimento) e presença de site (maturidade digital). O sistema **sugere** os valores com origem; o usuário confirma ou ajusta. Sem os 8, a empresa aparece como "ICP a validar".
+`backend/icp.py` exige 8 indicadores com pesos somando 100. Nota de 0 a 5 por indicador; campo vazio = desconhecido, não zero. Sem os 8, a empresa aparece como "ICP a validar".
+
+**Origem de cada indicador** (sugestão automática quando há dado; o usuário confirma ou ajusta em todos):
+
+| Chave | Indicador | Peso | Origem da sugestão | Regra de sugestão | Sempre manual |
+|---|---|---|---|---|---|
+| `escala` | Escala operacional | 15 | Receita (porte) | MEI=1, ME=2, EPP=3, demais=4 | não |
+| `capacidade` | Capacidade de investimento | 20 | Receita (capital social, Simples) | faixas de capital social; Simples reduz a nota em 1 | sim (validar com o decisor) |
+| `dependencia` | Dependência de atendimento | 15 | site (sinais de pedido só por WhatsApp e sem app) | sem app nem cardápio online = nota alta | sim |
+| `dor` | Dor ou ineficiência | 15 | site (WhatsApp como único canal) | hipótese, não prova | sim |
+| `retorno` | Potencial de retorno | 15 | — | sem dado público | sim |
+| `maturidade` | Maturidade digital | 10 | site (presença de site, cardápio online, app) | quanto menos canais digitais, maior a oportunidade | não |
+| `momento` | Momento comercial | 5 | Receita (data de abertura, situação) | empresa recente (até 2 anos) = nota maior | não |
+| `decisor` | Acesso ao decisor | 5 | Receita (telefone e e-mail, só não-MEI) | contato disponível = nota maior | sim |
+
+**Regra:** toda sugestão mostra a origem e a data. O usuário pode alterar qualquer nota; a alteração fica registrada como origem `usuario`. Faixas de capital social e limites de idade ficam em uma tabela de configuração, a definir na Fase 2, e não no código.
